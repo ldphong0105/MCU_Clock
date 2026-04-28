@@ -47,6 +47,8 @@
 ## II. Sơ đồ khối
 
 <img width="702" height="539" alt="image" src="https://github.com/user-attachments/assets/ad44b0d6-2a29-4ac8-8fb4-a1fe8e8c1720" />
+
+
 ## III. [cite_start]Kế hoạch Kiểm thử & Các trường hợp biên (Test Plan & Edge Cases) 
 
 ### [cite_start]A. Test Case: Biên đếm thời gian tự động (Time Rollover) [cite: 40]
