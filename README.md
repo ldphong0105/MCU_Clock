@@ -1,4 +1,18 @@
-ID,Kịch bản Test,Hành động,Kết quả mong đợi,Trạng thái
-TC_01,Chuyển phút,Đợi đồng hồ chạy đến XX:59 và qua giây 59,"Phút reset về 00, Giờ tăng lên 1.",Pass   
-TC_02,Chuyển ngày (Biên cực đại),Set đồng hồ chạy đến 23:59 và qua giây 59.,Đồng hồ reset về 00:00.,Pass   
-TC_03,Khởi động lại nguồn,Rút nguồn mạch và cắm lại. Giờ hẹn sẽ được đọc từ EPPROM lên giữ nguyên giá trị ban đầu.,"Giờ hiện tại mất, reset về 00.00",Pass   
+stateDiagram-v2
+    [*] --> STATE_NORMAL : start
+    
+    STATE_NORMAL --> STATE_SET_HOUR : SW3
+    STATE_SET_HOUR --> STATE_SET_MINUTE : SW3
+    STATE_SET_MINUTE --> STATE_NORMAL : SW3 || Timeout_30s
+    
+    STATE_SET_HOUR --> STATE_NORMAL : Timeout_30s
+    STATE_SET_HOUR --> STATE_SET_HOUR : SW6 || SW10
+    STATE_SET_MINUTE --> STATE_SET_MINUTE : SW6 || SW10
+    
+    STATE_NORMAL --> STATE_SET_ALARM_HOUR : SW16
+    STATE_SET_ALARM_HOUR --> STATE_SET_ALARM_MINUTE : SW16
+    STATE_SET_ALARM_MINUTE --> STATE_NORMAL : SW16 || Timeout_30s
+    
+    STATE_SET_ALARM_HOUR --> STATE_NORMAL : Timeout_30s
+    STATE_SET_ALARM_HOUR --> STATE_SET_ALARM_HOUR : SW6 || SW10
+    STATE_SET_ALARM_MINUTE --> STATE_SET_ALARM_MINUTE : SW6 || SW10
