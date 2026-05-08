@@ -32,7 +32,10 @@ void CT16B0_NvicDisable(void);
 /*_____ M A C R O S ________________________________________________________*/
 
 /*_____ F U N C T I O N S __________________________________________________*/
-
+uint16_t timer_repeat = 0;
+uint8_t timer_1s_flag = 0;
+uint8_t timer_1ms_flag = 0;
+uint8_t timer_500ms_flag = 0;
 /*****************************************************************************
 * Function		: CT16B0_IRQHandler
 * Description	: ISR of CT16B0 interrupt
@@ -41,8 +44,24 @@ void CT16B0_NvicDisable(void);
 * Return		: None
 * Note			: None
 *****************************************************************************/
-__irq void CT16B0_IRQHandler(void)
+void CT16B0_IRQHandler(void)
 {
+	uint32_t ris = SN_CT16B0->RIS;	//read interrupt request
+	if(ris & (1 << 5))		//interrupt flag for match MR9
+	{
+		timer_repeat++;
+		if(timer_repeat == 500 && timer_repeat == 1000)
+		{
+			timer_500ms_flag = 1;
+		}
+		if(timer_repeat == 1000)
+		{
+			timer_repeat = 0;
+			timer_1s_flag = 1;
+		}
+		timer_1ms_flag = 1;
+	}
+	
 	//clear ct16b0 group interrupt flag
 	SN_CT16B0->IC = 0xffffffff;
 }
@@ -60,8 +79,17 @@ void CT16B0_Init(void)
 	//Enable P_CLOCK for CT16B0.
 	__CT16B0_ENABLE;
 	
+	SN_CT16B0->MR9 = 12 * 1000 -1;	//HCLK=12MHz.timer 1ms
 	
+	SN_CT16B0->MCTRL = 1<<30|			//when TC == MR9,reset TC = 0;
+										 1<<29;				//when TC == MR9
 	
+	SN_CT16B0->TMRCTRL = 1 << 1;		//reset timer count
+	while(SN_CT16B0->TMRCTRL & (1<<1));
+	
+	SN_CT16B0->TMRCTRL = 1;					//START TIMER
+	
+	NVIC_EnableIRQ(CT16B0_IRQn);		//ENABLE systerm CT16B0 interrput
 }
 
 /*****************************************************************************

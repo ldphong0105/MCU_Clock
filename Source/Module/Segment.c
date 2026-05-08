@@ -92,7 +92,7 @@ void Digital_DisplayDEC(uint16_t dec)
 		uint8_t i;
 		for(i=0;i<3;i++)		//reserve the lowest BCD bit at anytime
 		{
-					if(segment_buff[i] == SEGMENT_TABLE[0])
+			if(segment_buff[i] == SEGMENT_TABLE[0])
 				segment_buff[i] = SEG_DARK;
 			else
 				break;
